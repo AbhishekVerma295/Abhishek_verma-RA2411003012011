@@ -1,33 +1,39 @@
 /*
  * Task 5 — wrap-up:
- * I ended up with 4 classes: BankAccount, AccountRepository, NotificationService
- * and StatementGenerator. It is easier to test because each class has one job,
- * so I can test deposit and withdraw without a database or an email server.
- * StatementGenerator just returns a String, so I can compare it instead of
- * reading printed output.
+ * For the Salary Account I only had to open and edit Main (to create the new
+ * account and pick its policy). Everything else was brand new: SalaryAccount,
+ * SalaryInterestPolicy, InterestPolicy, SavingsInterestPolicy and
+ * CurrentInterestPolicy.
+ * Zero existing policy classes were changed to add the Salary Account.
  */
 public class Main {
 
     public static void main(String[] args) {
 
-        BankAccount account = new BankAccount(101, "Ravi", 17, 200, "Savings");
-
+        NotificationService notificationService = new EmailNotificationService();
         AccountRepository repository = new AccountRepository();
-        NotificationService notificationService = new NotificationService();
         StatementGenerator statementGenerator = new StatementGenerator();
 
-        account.setPin(1234);
+        Bank bank = new Bank(notificationService, repository);
 
-        account.deposit(1000);
-        notificationService.send("Deposit successful. New balance: " + account.getBalance());
-        repository.save(account);
+        BankAccount savings = new BankAccount(101, "Ravi", 17, 200, "Savings");
+        savings.setPin(1234);
 
-        account.withdraw(500, 1234);
-        notificationService.send("Withdrawal successful. New balance: " + account.getBalance());
-        repository.save(account);
+        bank.deposit(savings, 1000);
+        bank.withdraw(savings, 500, 1234);
+        bank.withdraw(savings, 500, 9999); // wrong PIN, should fail
 
-        account.withdraw(500, 9999); // wrong PIN, should fail
+        System.out.println(statementGenerator.generate(savings));
 
-        System.out.println(statementGenerator.generate(account));
+        InterestPolicy savingsPolicy = new SavingsInterestPolicy();
+        System.out.println("Savings interest: Rs. " + bank.interest(savings, savingsPolicy));
+
+        BankAccount current = new BankAccount(102, "Meera", 30, 5000, "Current");
+        InterestPolicy currentPolicy = new CurrentInterestPolicy();
+        System.out.println("Current interest: Rs. " + bank.interest(current, currentPolicy));
+
+        SalaryAccount salary = new SalaryAccount(103, "Arjun", 25, 8000);
+        InterestPolicy salaryPolicy = new SalaryInterestPolicy();
+        System.out.println("Salary interest: Rs. " + bank.interest(salary, salaryPolicy));
     }
 }

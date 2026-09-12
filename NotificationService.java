@@ -1,6 +1,4 @@
-public class NotificationService {
+public interface NotificationService {
 
-    public void send(String message) {
-        System.out.println("Sending: " + message);
-    }
+    void send(String message);
 }

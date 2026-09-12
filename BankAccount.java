@@ -127,6 +127,12 @@ public class BankAccount {
         return pin != null && pin.equals(enteredPin);
     }
 
+    // Task 1 — to add a 4th account type to this if/else chain I would have to touch:
+    //  - this calculateInterest() method: add one more "else if" branch
+    //  - the branch condition itself (accountType.equals("..."))
+    //  - the minimum balance line in the constructor
+    //  - the minimum balance line in withdraw()
+    // Replaced by InterestPolicy, so Main no longer uses this method.
     public double calculateInterest() {
         if (accountType.equals("Savings")) {
             return balance * 0.04;
